@@ -2,7 +2,7 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
-resource "kubernetes_pod" "dotlanche_db" {
+resource "kubernetes_stateful_set" "dotlanche_db" {
   metadata {
     name = "dotlanche-db"
     labels = {
@@ -11,39 +11,101 @@ resource "kubernetes_pod" "dotlanche_db" {
   }
 
   spec {
-    container {
-      name    = "c-dotlanche-db"
-      image   = "postgres:16.3-alpine3.18"
-      command = ["docker-entrypoint.sh"]
-      args    = ["-c", "max_connections=500"]
+    service_name = "dotlanche-db-svc"
+    replicas     = 1
 
-      port {
-        container_port = 5432
+    selector {
+      match_labels = {
+        app = "dotlanche-db"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "dotlanche-db"
+        }
       }
 
-      env {
-        name  = "POSTGRES_DB"
-        value = "dotlanches"
-      }
+      spec {
+        container {
+          name    = "postgres"
+          image   = "postgres:16.3-alpine3.18"
+          command = ["docker-entrypoint.sh"]
+          args    = ["-c", "max_connections=500"]
 
-      env {
-        name  = "POSTGRES_USER"
-        value = "admin"
-      }
+          port {
+            container_port = 5432
+          }
 
-      env {
-        name = "POSTGRES_PASSWORD"
-        value_from {
-          secret_key_ref {
-            name = "dotlanche-secrets"
-            key  = "db-password"
+          env {
+            name  = "POSTGRES_DB"
+            value = "dotlanches"
+          }
+
+          env {
+            name  = "POSTGRES_USER"
+            value = "admin"
+          }
+
+          env {
+            name = "POSTGRES_PASSWORD"
+            value_from {
+              secret_key_ref {
+                name = "dotlanche-secrets"
+                key  = "db-password"
+              }
+            }
+          }
+
+          volume_mount {
+            name      = "postgres-storage"
+            mount_path = "/var/lib/postgresql/data"
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/health"
+              port = 5432
+            }
+            initial_delay_seconds = 30
+            period_seconds        = 30
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/health"
+              port = 5432
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 10
+          }
+        }
+
+        volume {
+          name = "postgres-storage"
+          persistent_volume_claim {
+            claim_name = kubernetes_persistent_volume_claim.dotlanche_pvc.metadata[0].name
+          }
+        }
+      }
+    }
+
+    volume_claim_template {
+      metadata {
+        name = "postgres-storage"
+      }
+      spec {
+        access_modes = ["ReadWriteOnce"]
+        resources {
+          requests = {
+            storage = "500Mi"
           }
         }
       }
     }
   }
 }
-
 
 resource "kubernetes_service" "dotlanche_db_svc" {
   metadata {
@@ -93,7 +155,7 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
 
       spec {
         container {
-          name  = "c-dotlanche-api"
+          name  = "dotlanche-api"
           image = "atcorrea/dotlanche-api:1.2"
 
           port {
@@ -161,7 +223,7 @@ resource "kubernetes_service" "dotlanche_api_svc" {
   }
 
   spec {
-    type = "NodePort"
+    type = "LoadBalancer"  # Alterado de NodePort para LoadBalancer
 
     selector = {
       app = "dotlanche-api"
@@ -170,7 +232,6 @@ resource "kubernetes_service" "dotlanche_api_svc" {
     port {
       port        = 80
       target_port = 8080
-      node_port   = 30000
     }
   }
 }
@@ -257,7 +318,7 @@ resource "kubernetes_persistent_volume_claim" "dotlanche_pvc" {
 
     resources {
       requests = {
-        storage = "450Mi"
+        storage = "500Mi"
       }
     }
   }
