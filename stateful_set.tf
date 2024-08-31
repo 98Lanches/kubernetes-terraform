@@ -1,4 +1,9 @@
 resource "kubernetes_stateful_set" "dotlanche_db" {
+  depends_on = [
+    kubernetes_secret.dotlanche_secrets,
+    kubernetes_persistent_volume.dotlanche_pv,
+    kubernetes_persistent_volume_claim.dotlanche_pvc
+  ]
   metadata {
     name = "dotlanche-db"
     labels = {

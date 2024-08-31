@@ -1,4 +1,5 @@
 resource "kubernetes_service" "dotlanche_db_svc" {
+  depends_on = [kubernetes_stateful_set.dotlanche_db]
   metadata {
     name = "dotlanche-db-svc"
     labels = {
@@ -21,12 +22,15 @@ resource "kubernetes_service" "dotlanche_db_svc" {
 }
 
 resource "kubernetes_service" "dotlanche_api_svc" {
+  depends_on = [
+    kubernetes_deployment.dotlanche_api_deployment
+  ]
   metadata {
     name = "dotlanche-api-svc"
   }
 
   spec {
-    type = "LoadBalancer"
+    type = "NodePort"
 
     selector = {
       app = "dotlanche-api"
@@ -35,6 +39,8 @@ resource "kubernetes_service" "dotlanche_api_svc" {
     port {
       port        = 80
       target_port = 8080
+      node_port   = 30000
     }
   }
 }
+
