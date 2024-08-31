@@ -1,5 +1,6 @@
 resource "kubernetes_deployment" "dotlanche_api_deployment" {
   depends_on = [
+    kubernetes_secret.dotlanche_secrets,
     kubernetes_service.dotlanche_db_svc
   ]
   metadata {
@@ -10,9 +11,6 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
   }
 
   spec {
-    # Define as réplicas iniciais como 3 para corresponder ao min_replicas do HPA
-    replicas = 3 
-
     selector {
       match_labels = {
         app = "dotlanche-api"
@@ -28,7 +26,7 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
 
       spec {
         container {
-          name  = "c-dotlanche-api"
+          name  = "container-dotlanche-api"
           image = "atcorrea/dotlanche-api:1.2"
 
           port {
