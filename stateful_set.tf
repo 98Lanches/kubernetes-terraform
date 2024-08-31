@@ -55,7 +55,7 @@ resource "kubernetes_stateful_set" "dotlanche_db" {
           }
 
           volume_mount {
-            name      = "postgres-storage"
+            name       = "postgres-storage"
             mount_path = "/var/lib/postgresql/data"
           }
 
