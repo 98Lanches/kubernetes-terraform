@@ -64,18 +64,16 @@ resource "kubernetes_stateful_set" "dotlanche_db" {
           }
 
           liveness_probe {
-            http_get {
-              path = "/health"
-              port = 5432
+            exec {
+              command = ["pg_isready", "-U", "admin", "-d", "dotlanches"]
             }
             initial_delay_seconds = 30
             period_seconds        = 30
           }
 
           readiness_probe {
-            http_get {
-              path = "/health"
-              port = 5432
+            exec {
+              command = ["pg_isready", "-U", "admin", "-d", "dotlanches"]
             }
             initial_delay_seconds = 15
             period_seconds        = 10
@@ -223,7 +221,7 @@ resource "kubernetes_service" "dotlanche_api_svc" {
   }
 
   spec {
-    type = "LoadBalancer"  # Alterado de NodePort para LoadBalancer
+    type = "LoadBalancer"
 
     selector = {
       app = "dotlanche-api"
