@@ -27,7 +27,7 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
       spec {
         container {
           name  = "container-dotlanche-api"
-          image = "atcorrea/dotlanche-api:1.2"
+          image = "atcorrea/dotlanche-api:1.4"
 
           port {
             container_port = 8080
