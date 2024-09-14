@@ -1,5 +1,5 @@
 resource "kubernetes_horizontal_pod_autoscaler_v2" "dotlanche_api_hpa" {
-  depends_on = [ kubernetes_service.dotlanche_api_svc ]
+  depends_on = [kubernetes_service.dotlanche_api_svc]
   metadata {
     name = "dotlanche-api-hpa"
   }
@@ -20,7 +20,7 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "dotlanche_api_hpa" {
       resource {
         name = "cpu"
         target {
-          type               = "Utilization"
+          type                = "Utilization"
           average_utilization = 30
         }
       }
