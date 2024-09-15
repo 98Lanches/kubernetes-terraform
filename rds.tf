@@ -13,7 +13,7 @@ resource "aws_db_instance" "rds_instance_fiap" {
   instance_class    = "db.t3.micro"
   allocated_storage = 20
   db_name           = "mydb"              # Nome do banco de dados criado no RDS
-  username          = "fiap-user"             # Nome do usuário
+  username          = "fiap"             # Nome do usuário
   password          = "mysecretpassword"  # Senha
   parameter_group_name = "default.postgres12"
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
