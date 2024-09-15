@@ -22,15 +22,15 @@ resource "aws_iam_role" "eks_node_role" {
 # usem serviços como EKS, redes e ECR (Container Registry).
 resource "aws_iam_role_policy_attachment" "eks_node_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" # Política que permite aos nós interagir com o EKS
+  policy_arn = "arn:aws:iam::426655075367:role/LabRole" # Política que permite aos nós interagir com o EKS
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy" # Política para gerenciar redes dentro do cluster Kubernetes
+  policy_arn = "arn:aws:iam::426655075367:role/LabRole" # Política para gerenciar redes dentro do cluster Kubernetes
 }
 
 resource "aws_iam_role_policy_attachment" "eks_registry_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" # Permite que os nós puxem imagens de container do ECR
+  policy_arn = "arn:aws:iam::426655075367:role/LabRole" # Permite que os nós puxem imagens de container do ECR
 }
