@@ -1,12 +1,15 @@
-resource "kubernetes_secret" "dotlanche_secrets" {
-  metadata {
-    name = "dotlanche-secrets"
+resource "aws_secretsmanager_secret" "my_db_secret" {
+  name = "my-db-secret"
+  
+  tags = {
+    Name = "my-db-secret"
   }
+}
 
-  data = {
-    connection-string = "Host=dotlanche-db-svc;Port=5432;Database=dotlanches;Username=admin;Password=P@55w0rd"
-    db-password       = "P@55w0rd"
-  }
-
-  type = "Opaque"
+resource "aws_secretsmanager_secret_version" "my_db_secret_version" {
+  secret_id     = aws_secretsmanager_secret.my_db_secret.id
+  secret_string = jsonencode({
+    connection_string = "postgres://mydbuser:P@55w0rd@mydbendpoint:5432/dotlanches"
+    db_password       = "P@55w0rd"
+  })
 }

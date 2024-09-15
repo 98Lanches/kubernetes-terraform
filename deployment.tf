@@ -1,12 +1,13 @@
 resource "kubernetes_deployment" "dotlanche_api_deployment" {
   depends_on = [
-    kubernetes_secret.dotlanche_secrets,
-    kubernetes_service.dotlanche_db_svc
+    aws_secretsmanager_secret_version.my_db_secret_version,
+    null_resource.update_rds_secret
   ]
+
   metadata {
     name = "dotlanche-api-deployment"
     labels = {
-      app = "dotlanche"
+      app = "dotlanche-api"
     }
   }
 
@@ -69,11 +70,21 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
           }
 
           env {
-            name = "ConnectionStrings__DefaultConnection"
+            name = "DB_CONNECTION_STRING"
             value_from {
               secret_key_ref {
-                name = "dotlanche-secrets"
+                name = "my-db-secret" # Nome do Kubernetes Secret gerado pelo ExternalSecret
                 key  = "connection-string"
+              }
+            }
+          }
+
+          env {
+            name  = "DB_PASSWORD"
+            value_from {
+              secret_key_ref {
+                name = "my-db-secret" # Nome do Kubernetes Secret gerado pelo ExternalSecret
+                key  = "db-password"
               }
             }
           }
