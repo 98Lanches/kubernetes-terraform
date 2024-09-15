@@ -1,4 +1,5 @@
 resource "aws_iam_role" "eks_role" {
+  depends_on = [ resource.aws_iam_role.eks_node_role ]
   name = "fiap-eks-cluster-role"
 
   assume_role_policy = jsonencode({

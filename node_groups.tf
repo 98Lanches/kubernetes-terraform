@@ -13,6 +13,11 @@ resource "aws_eks_node_group" "default" {
     min_size     = 1 # Número mínimo de nós
   }
 
+  remote_access {
+    ec2_ssh_key = "MacBookSSH"
+    source_security_group_ids = [aws_security_group.eks_worker_sg.id]
+  }
+
   instance_types = ["t2.micro"] # Tipo de instância EC2 usada para os nós (equilíbrio entre custo e performance)
 
   depends_on = [

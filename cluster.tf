@@ -1,6 +1,7 @@
 # Módulo para criar o cluster EKS na AWS.
 # Ele provisiona o cluster e os recursos de rede necessários (subnets, VPC).
 module "eks" {
+  depends_on = [ module.vpc ]
   source  = "terraform-aws-modules/eks/aws"
   version = "20.24.0" # Usamos uma versão estável do módulo EKS
 
@@ -11,6 +12,6 @@ module "eks" {
 
   tags = {
     Name = "fiap-cluster-eks" # O nome da tag
-    Environment = "production" # Identificador de ambiente
+    Environment = "development" # Identificador de ambiente
   }
 }

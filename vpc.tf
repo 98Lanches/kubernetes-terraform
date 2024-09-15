@@ -15,6 +15,6 @@ module "vpc" {
   single_nat_gateway = true  # Usa apenas um NAT Gateway para economia de custos
 
   tags = {
-    Name = "fiap-eks-vpc"              # Tags para identificar a VPC
+    Name = "fiap-eks-vpc" # Tags para identificar a VPC
   }
 }
