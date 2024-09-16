@@ -1,6 +1,6 @@
 # EKS Cluster
 resource "aws_eks_cluster" "eks_cluster" {
-  name     = "my-cluster"
+  name     = "dotlanche_cluster"
   role_arn  = "arn:aws:iam::426655075367:role/LabRole"
 
   vpc_config {
@@ -13,14 +13,14 @@ resource "aws_eks_cluster" "eks_cluster" {
 
   # Adicione tags se necessário
   tags = {
-    Name = "my-cluster"
+    Name = "dotlanche_cluster"
   }
 }
 
 # Node Group para o EKS
 resource "aws_eks_node_group" "my_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
-  node_group_name = "my-node-group"
+  node_group_name = "dotlanche_node_group"
   node_role_arn   = "arn:aws:iam::426655075367:role/LabRole"
   subnet_ids =  [
     aws_subnet.public_subnet_a.id,
@@ -35,6 +35,6 @@ resource "aws_eks_node_group" "my_node_group" {
 
   # Adicione tags se necessário
   tags = {
-    Name = "my-node-group"
+    Name = "dotlanche_node_group"
   }
 }

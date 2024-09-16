@@ -1,6 +1,6 @@
 resource "kubernetes_deployment" "dotlanche_api_deployment" {
   depends_on = [
-    aws_secretsmanager_secret_version.my_db_secret_version,
+    aws_secretsmanager_secret_version.dotlanche_db_secret_version,
     null_resource.update_rds_secret
   ]
 

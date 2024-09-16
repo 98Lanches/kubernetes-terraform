@@ -1,13 +1,13 @@
 # Grupo de sub-redes para o banco de dados
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "my-db-subnet-group"
+  name       = "dotlanche-db-subnet-group"
   subnet_ids         = [
       aws_subnet.public_subnet_a.id,
       aws_subnet.public_subnet_b.id
     ]
 
   tags = {
-    Name = "my-db-subnet-group"
+    Name = "dotlanche-db-subnet-group"
   }
 }
 
@@ -18,13 +18,13 @@ resource "aws_db_parameter_group" "custom_postgres" {
 }
 
 # Instância RDS
-resource "aws_db_instance" "my_db" {
+resource "aws_db_instance" "dotlanche_db" {
   identifier              = "fiap-rds"
   engine                  = "postgres"
   instance_class          = "db.t3.micro"
   allocated_storage       = 20
   storage_type            = "gp2"
-  username                = "mydbuser"
+  username                = "dotlancheuser"
   password                = "cP8KZps3mn02dsOi"
   db_name                 = "dotlanches"
   parameter_group_name    = aws_db_parameter_group.custom_postgres.name
@@ -34,10 +34,10 @@ resource "aws_db_instance" "my_db" {
   publicly_accessible     = false
 
   tags = {
-    Name = "my-db-instance"
+    Name = "dotlanche-db-instance"
   }
 }
 
 output "rds_endpoint" {
-  value = aws_db_instance.my_db.endpoint
+  value = aws_db_instance.dotlanche_db.endpoint
 }
