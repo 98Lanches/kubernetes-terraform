@@ -28,7 +28,7 @@ resource "aws_db_instance" "dotlanche_db" {
   password                = "cP8KZps3mn02dsOi"
   db_name                 = "dotlanches"
   parameter_group_name    = aws_db_parameter_group.custom_postgres.name
-  vpc_security_group_ids  = ["sg-0fba150b4ded6eec4"]
+  vpc_security_group_ids  = [aws_security_group.basic_sg.id]
   db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
   multi_az                = false
   publicly_accessible     = false

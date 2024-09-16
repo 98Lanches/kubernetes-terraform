@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "eks_cluster" {
       aws_subnet.public_subnet_a.id,
       aws_subnet.public_subnet_b.id
     ]
-    security_group_ids = ["sg-0fba150b4ded6eec4"]
+    security_group_ids = [aws_security_group.basic_sg.id]
   }
 
   # Adicione tags se necessário
@@ -18,7 +18,7 @@ resource "aws_eks_cluster" "eks_cluster" {
 }
 
 # Node Group para o EKS
-resource "aws_eks_node_group" "my_node_group" {
+resource "aws_eks_node_group" "dotlanche_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "dotlanche_node_group"
   node_role_arn   = "arn:aws:iam::426655075367:role/LabRole"

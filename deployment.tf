@@ -73,7 +73,7 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
             name = "DB_CONNECTION_STRING"
             value_from {
               secret_key_ref {
-                name = "my-db-secret" # Nome do Kubernetes Secret gerado pelo ExternalSecret
+                name = "dotlanche-db-secret"
                 key  = "connection-string"
               }
             }
@@ -83,7 +83,7 @@ resource "kubernetes_deployment" "dotlanche_api_deployment" {
             name  = "DB_PASSWORD"
             value_from {
               secret_key_ref {
-                name = "my-db-secret" # Nome do Kubernetes Secret gerado pelo ExternalSecret
+                name = "dotlanche-db-secret"
                 key  = "db-password"
               }
             }
