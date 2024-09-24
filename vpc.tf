@@ -1,23 +1,21 @@
-# Create a VPC
-resource "aws_vpc" "k8svpc" {
+resource "aws_vpc" "dotlanches-vpc" {
   cidr_block = "192.168.0.0/16"
   tags = {
-    Name = "k8svpc"
+    Name = "dotlanches-vpc"
   }
 }
 
-resource "aws_internet_gateway" "k8svpc-igw" {
-  vpc_id = aws_vpc.k8svpc.id
+resource "aws_internet_gateway" "dotlanches-vpc-igw" {
+  vpc_id = aws_vpc.dotlanches-vpc.id
 
   tags = {
-    Name = "k8svpc-igw"
+    Name = "dotlanches-vpc-igw"
   }
 }
 
-# private subnet 01
-
+# PRIVATE SUBNETS
 resource "aws_subnet" "private-us-east-1a" {
-  vpc_id            = aws_vpc.k8svpc.id
+  vpc_id            = aws_vpc.dotlanches-vpc.id
   cidr_block        = "192.168.0.0/19"
   availability_zone = "us-east-1a"
 
@@ -25,12 +23,12 @@ resource "aws_subnet" "private-us-east-1a" {
     Name                              = "private-us-east-1a"
     "kubernetes.io/role/internal-elb" = "1"
     "kubernetes.io/cluster/demo"      = "owned"
+    type                              = "private"
   }
 }
-# private subnet 02
 
 resource "aws_subnet" "private-us-east-1b" {
-  vpc_id            = aws_vpc.k8svpc.id
+  vpc_id            = aws_vpc.dotlanches-vpc.id
   cidr_block        = "192.168.32.0/19"
   availability_zone = "us-east-1b"
 
@@ -38,13 +36,14 @@ resource "aws_subnet" "private-us-east-1b" {
     Name                              = "private-us-east-1b"
     "kubernetes.io/role/internal-elb" = "1"
     "kubernetes.io/cluster/demo"      = "owned"
+    type                              = "private"
   }
 }
 
-# public subnet 01
+# PUBLIC SUBNETS
 
 resource "aws_subnet" "public-us-east-1a" {
-  vpc_id                  = aws_vpc.k8svpc.id
+  vpc_id                  = aws_vpc.dotlanches-vpc.id
   cidr_block              = "192.168.64.0/19"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
@@ -53,12 +52,12 @@ resource "aws_subnet" "public-us-east-1a" {
     Name                         = "public-us-east-1a"
     "kubernetes.io/role/elb"     = "1" #this instruct the kubernetes to create public load balancer in these subnets
     "kubernetes.io/cluster/demo" = "owned"
+    type                         = "public"
   }
 }
-# public subnet 02
 
 resource "aws_subnet" "public-us-east-1b" {
-  vpc_id                  = aws_vpc.k8svpc.id
+  vpc_id                  = aws_vpc.dotlanches-vpc.id
   cidr_block              = "192.168.96.0/19"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
@@ -67,6 +66,7 @@ resource "aws_subnet" "public-us-east-1b" {
     Name                         = "public-us-east-1b"
     "kubernetes.io/role/elb"     = "1" #this instruct the kubernetes to create public load balancer in these subnets
     "kubernetes.io/cluster/demo" = "owned"
+    type                         = "public"
   }
 }
 
@@ -86,17 +86,17 @@ resource "aws_nat_gateway" "k8s-nat" {
     Name = "k8s-nat"
   }
 
-  depends_on = [aws_internet_gateway.k8svpc-igw]
+  depends_on = [aws_internet_gateway.dotlanches-vpc-igw]
 }
 
-# routing table
+# ROUTE TABLES
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.k8svpc.id
+  vpc_id = aws_vpc.dotlanches-vpc.id
 
   route {
-      cidr_block                 = "0.0.0.0/0"
-      nat_gateway_id             = aws_nat_gateway.k8s-nat.id
-    }
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.k8s-nat.id
+  }
 
   tags = {
     Name = "private"
@@ -104,12 +104,12 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.k8svpc.id
+  vpc_id = aws_vpc.dotlanches-vpc.id
 
   route {
-      cidr_block                 = "0.0.0.0/0"
-      gateway_id                 = aws_internet_gateway.k8svpc-igw.id
-    }
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.dotlanches-vpc-igw.id
+  }
 
   tags = {
     Name = "public"
@@ -117,7 +117,7 @@ resource "aws_route_table" "public" {
 }
 
 
-# routing table association
+# ROUTING TABLE ASSOCIATIONS
 
 resource "aws_route_table_association" "private-us-east-1a" {
   subnet_id      = aws_subnet.private-us-east-1a.id

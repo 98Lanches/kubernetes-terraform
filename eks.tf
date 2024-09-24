@@ -1,8 +1,6 @@
-# bare minimum requirement of eks
-
-resource "aws_eks_cluster" "demo" {
-  name     = "demo"
-  role_arn = "arn:aws:iam::032963977760:role/LabRole"
+resource "aws_eks_cluster" "dotcluster" {
+  name     = "dotcluster"
+  role_arn = var.eks_role
 
   vpc_config {
     subnet_ids = [
@@ -11,15 +9,15 @@ resource "aws_eks_cluster" "demo" {
       aws_subnet.public-us-east-1a.id,
       aws_subnet.public-us-east-1b.id
     ]
+
+    security_group_ids = [aws_security_group.eks_security_group.id]
   }
 }
 
-# aws node group 
-
-resource "aws_eks_node_group" "private-nodes" {
-  cluster_name    = aws_eks_cluster.demo.name
-  node_group_name = "private-nodes"
-  node_role_arn   = "arn:aws:iam::032963977760:role/LabRole"
+resource "aws_eks_node_group" "dotcluster-nodes" {
+  cluster_name    = aws_eks_cluster.dotcluster.name
+  node_group_name = "dotcluster-nodes"
+  node_role_arn   = var.eks_role
 
   subnet_ids = [
     aws_subnet.private-us-east-1a.id,
