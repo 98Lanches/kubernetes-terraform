@@ -1,28 +1,18 @@
-resource "aws_security_group" "basic_sg" {
-  name        = "dotlanche-security-group"
-  description = "A basic security group"
-
-  vpc_id = aws_vpc.main.id
+resource "aws_security_group" "eks_security_group" {
+  vpc_id      = aws_vpc.dotlanches-vpc.id
+  description = "Allow traffic for EKS Cluster"
 
   ingress {
     from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Permitir tráfego de entrada de qualquer lugar
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Permitir tráfego de saída para qualquer lugar
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Name = "dotlanche-security-group"
-  }
-}
-
-output "security_group_id" {
-  value = aws_security_group.basic_sg.id
 }
