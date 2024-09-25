@@ -14,3 +14,4 @@ Necessario que possui as seguintes ferramentas instaladas
 3. Dentro do projeto rodar o comando `terraform init`
 4. Rodar o comando `terraform plan` para executar as verificações
 5. Rodar o comando `terraform apply` para aplicar as alterações
+
