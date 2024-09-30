@@ -2,14 +2,14 @@
 Repositório de infraestrutura como código contendo os scripts Terraform para provisionamento da estrutura EKS na AWS. A aplicação dessa infraestrutura está configurada para ser executada através do [Github Actions](https://docs.github.com/pt/actions/about-github-actions/understanding-github-actions)
 
 # Infraestrutura gerenciada:
-- VPC
+- VPC:
     - Subnets públicas
     - Subnets Privadas
     - Route Tables
     - Internet Gateway
     - NAT Gateway
     - Security Groups
-- EKS
+- EKS:
     - Node Groups
 
 ![arquitetura](docs/archtecture.jpg)
