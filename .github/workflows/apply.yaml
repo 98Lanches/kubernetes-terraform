@@ -1,10 +1,7 @@
-name: 'Run Terraform'
-
+name: Apply
 on:
-  pull_request:
-
   push:
-    branches:
+    branches: 
       - main
 
 env:
@@ -14,13 +11,6 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
   AWS_REGION: us-east-1
-
-defaults:
-  run:
-    shell: bash
-
-permissions:
-  contents: read
 
 jobs:
   terraform:
@@ -39,10 +29,6 @@ jobs:
       name: Terraform Init
       run: terraform init -backend-config="bucket=${{ vars.TERRAFORM_S3_BACKEND }}"
 
-    - id: validate
-      name: Terraform Validate
-      run: terraform validate
-
     - id: plan
       name: Terraform Plan
       env: 
@@ -50,9 +36,31 @@ jobs:
       run: terraform plan 
 
     - id: apply
-      if: github.ref == 'refs/heads/main'
       name: Terraform Apply
       env: 
         TF_VAR_eks_role: ${{ vars.LAB_ROLE }}
       run: terraform apply -auto-approve
 
+  create-k8s-resoures:
+    needs: terraform
+    name: Create Common Resources Kubernetes
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: AWS Cli login
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Update kubeconfig for EKS
+      run: |
+          aws eks update-kubeconfig --name ${{ secrets.AWS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+    - name: Apply kubernetes manifests
+      run: |
+        kubectl apply -f ./.kubernetes/nginx-ingress-controller.yaml
