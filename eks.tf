@@ -25,11 +25,11 @@ resource "aws_eks_node_group" "dotcluster-nodes" {
   ]
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t2.micro"]
+  instance_types = ["t2.medium"]
 
   scaling_config {
     desired_size = 3
-    max_size     = 3
+    max_size     = 4
     min_size     = 2
   }
 
