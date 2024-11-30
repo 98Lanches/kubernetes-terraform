@@ -11,6 +11,8 @@ Repositório de infraestrutura como código contendo os scripts Terraform para p
     - Security Groups
 - EKS:
     - Node Groups
+- Kubernetes:
+    - NGINX Ingress Controller
 
 ![arquitetura](docs/archtecture.jpg)
 
@@ -25,3 +27,5 @@ Necessario que possui as seguintes ferramentas instaladas
 2. Dentro do projeto rodar o comando `terraform init`
 3. Rodar o comando `terraform plan` para executar as verificações
 4. Rodar o comando `terraform apply` para aplicar as alterações
+5. Atualizar kubeconfig para conectar no cluster recém criado `aws eks update-kubeconfig --region us-east-1 --name dotcluster`
+6. Aplicar artefatos do ingress controller nginx. Na pasta .kubernetes, executar `kubectl apply -f nginx-ingress-controller.yaml`
