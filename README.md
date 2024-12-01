@@ -1,5 +1,5 @@
 # Kubernetes Terraform
-Repositório de infraestrutura como código contendo os scripts Terraform para provisionamento da estrutura EKS na AWS. A aplicação dessa infraestrutura está configurada para ser executada através do [Github Actions](https://docs.github.com/pt/actions/about-github-actions/understanding-github-actions)
+Repositório de infraestrutura como código contendo os scripts Terraform para provisionamento da estrutura EKS na AWS. A aplicação dessa infraestrutura está configurada para ser executada através do [Github Actions](https://docs.github.com/pt/actions/about-github-actions/understanding-github-actions).
 
 # Infraestrutura gerenciada:
 - VPC:
